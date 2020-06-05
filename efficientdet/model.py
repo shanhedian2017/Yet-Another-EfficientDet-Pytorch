@@ -1,14 +1,9 @@
 import torch.nn as nn
 import torch
-from torchvision.ops.boxes import nms as nms_torch
 
 from efficientnet import EfficientNet as EffNet
 from efficientnet.utils import MemoryEfficientSwish, Swish
 from efficientnet.utils_extra import Conv2dStaticSamePadding, MaxPool2dStaticSamePadding
-
-
-def nms(dets, thresh):
-    return nms_torch(dets[:, :4], dets[:, 4], thresh)
 
 
 class SeparableConvBlock(nn.Module):
@@ -368,8 +363,6 @@ class Classifier(nn.Module):
             feat = self.header(feat)
 
             feat = feat.permute(0, 2, 3, 1)
-            feat = feat.contiguous().view(feat.shape[0], feat.shape[1], feat.shape[2], self.num_anchors,
-                                          self.num_classes)
             feat = feat.contiguous().view(feat.shape[0], -1, self.num_classes)
 
             feats.append(feat)
